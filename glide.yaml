@@ -1,0 +1,12 @@
+package: github.com/merlincox/simpleparse
+import:
+- package: github.com/golang/mock
+  subpackages:
+  - gomock
+- package: golang.org/x/net
+  subpackages:
+  - html
+- package: github.com/golang-collections/collections
+  subpackages:
+  - stack
+

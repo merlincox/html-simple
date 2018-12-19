@@ -1,0 +1,34 @@
+hash: d2e44bcd2f3ad0761b6a50bc8826e6207a94d5d1f7d8dc8e8cc9960593ef6e55
+updated: 2018-12-19T18:05:55.032717013Z
+imports:
+- name: github.com/golang-collections/collections
+  version: 604e922904d35e97f98a774db7881f049cd8d970
+  subpackages:
+  - stack
+- name: github.com/golang/mock
+  version: 1f837508b8ff6c01edf3bb94cc9d1fc0527f001c
+  subpackages:
+  - gomock
+- name: golang.org/x/net
+  version: 1e491301e022f8f977054da4c2d852decd59571f
+  subpackages:
+  - html
+  - html/atom
+testImports:
+- name: github.com/gopherjs/gopherjs
+  version: 2967252ace8b112e63a5b5879e92de915fe731f4
+  subpackages:
+  - js
+- name: github.com/jtolds/gls
+  version: 77f18212c9c7edc9bd6a33d383a7b545ce62f064
+- name: github.com/smartystreets/assertions
+  version: 9c0ea8acbc1d8ad689f9e6fe0c1fa5838e0cabc2
+  subpackages:
+  - internal/go-render/render
+  - internal/oglematchers
+- name: github.com/smartystreets/goconvey
+  version: e5b2b7c9111590d019a696c7800593f666e1a7f4
+  subpackages:
+  - convey
+  - convey/gotest
+  - convey/reporting
