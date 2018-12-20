@@ -60,37 +60,33 @@ var (
 	whiteSpaceRE = regexp.MustCompile(`[\s\p{Zs}]+`)
 )
 
-const (
-	WIN_LBR  = "\r\n"
-	UNIX_LBR = "\n"
-)
-
-var lbr = WIN_LBR
-
 // HtmlTexter interface for creating text from HTML
 type HtmlTexter interface {
+	// StartTag handles a start tag
 	StartTag(tag string)
+	// SelfTag handles a self-closing tag
 	SelfTag(tag string)
+	// EndTag handles a closing tag
 	EndTag(tag string)
+	// Text handles a text element within an enclosing tag
 	Text(enclosing, input string)
+	// String returns the text
 	String() string
 }
 
-// SetUnixLbr with argument true sets Unix-style line-breaks in output ("\n")
-// with argument false sets Windows-style line-breaks in output ("\r\n", the default)
-func SetUnixLbr(b bool) {
-	if b {
-		lbr = UNIX_LBR
-	} else {
-		lbr = WIN_LBR
-	}
-}
+// HTML2Text generates text from HTML source using the built-in HtmlTexter.
+// If optional winLbr argument is set to true, linebreaks in output will follow Winsdows style ("\r\n")
+func HTML2Text(src string, winLbr ...bool) string {
 
-// HTML2Text generate text from HTML source using the built-in HtmlTexter
-func HTML2Text(src string) string {
+	lbr := "\n"
+
+	if len(winLbr) > 0 && winLbr[0] == true {
+		lbr = "\r\n"
+	}
 
 	texter := &simpleTexter{
 		sb: strings.Builder{},
+		lbr: lbr,
 	}
 
 	err := simpleParse(src, false, texter)
@@ -102,8 +98,8 @@ func HTML2Text(src string) string {
 	return ""
 }
 
-// Custom2Text generate text from HTML source using a supplied instance of HtmlTexter
-// if mustTag is true, throw an error if source appears to be plain text
+// Custom2Text generates text from HTML source using a supplied instance of HtmlTexter.
+// If mustTag is true, it throws an error if the source appears to be plain text.
 func Custom2Text(src string, mustTag bool, texter HtmlTexter) (string, error){
 
 	err := simpleParse(src, false, texter)
@@ -115,20 +111,29 @@ func Custom2Text(src string, mustTag bool, texter HtmlTexter) (string, error){
 	return "", err
 }
 
+// IsPlainText returns true if the source appears to be plain text:
+// that is, it contains no tags, docType section or HTML comments
+func IsPlainText(src string) bool {
+	err := simpleParse(src, true, nil)
+
+	return err != nil && err.Error() == "Contains no tags"
+}
+
 type simpleTexter struct {
 	sb strings.Builder
+	lbr string
 }
 
 func (h *simpleTexter) StartTag(tag string) {
-	h.sb.WriteString(strings.Repeat(lbr, openingBreakers[tag]))
+	h.sb.WriteString(strings.Repeat(h.lbr, openingBreakers[tag]))
 }
 
 func (h *simpleTexter) SelfTag(tag string) {
-	h.sb.WriteString(strings.Repeat(lbr, selfBreakers[tag]))
+	h.sb.WriteString(strings.Repeat(h.lbr, selfBreakers[tag]))
 }
 
 func (h *simpleTexter) EndTag(tag string) {
-	h.sb.WriteString(strings.Repeat(lbr, closingBreakers[tag]))
+	h.sb.WriteString(strings.Repeat(h.lbr, closingBreakers[tag]))
 }
 
 func (h *simpleTexter) Text(enclosing, input string) {
